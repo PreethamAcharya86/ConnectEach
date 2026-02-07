@@ -9,8 +9,6 @@ import styles from './style.module.css'
 import EmojiPicker from 'emoji-picker-react';
 import { useRouter } from 'next/router';
 import { setTokenIsThere } from '@/config/redux/reducer/authReducer';
-import { emptyMessage } from '@/config/redux/reducer/postReducer';
-
 export default function Dashboard() {
     const dispatch = useDispatch();
     const authState = useSelector((state) => state.auth);
@@ -51,7 +49,7 @@ export default function Dashboard() {
                 {
                     authState.user.length == 0 ? 
                     <div>
-                        Loading
+                        Loading..
                     </div> :
                     <div className="dashboardComponent md:px-5 px-1  !mt-8 relative">
                         <div className={`${styles.userDashbaord} flex justify-evenly items-center p-2 bg-blue-400 rounded-md`}>
