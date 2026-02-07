@@ -1,0 +1,35 @@
+.homeContainer > div:nth-child(odd) {
+  flex: 0.2;
+}
+.homeContainer > div:nth-child(even) {
+  flex: 1;
+}
+
+.navigate {
+  background-color: rgb(255, 255, 255);
+}
+
+
+.modern_scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern_scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modern_scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.4);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.modern_scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.7);
+}
+
+
+.modern_scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}

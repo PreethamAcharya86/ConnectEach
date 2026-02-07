@@ -1,0 +1,76 @@
+.join_btn {
+    background-image: linear-gradient(135deg, rgba(55, 71, 208, 0.495), rgba(47, 53, 125, 0.495));
+    color: white;
+    box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.476);
+    border: 2px solid black;
+}
+
+/* .main_container {
+    background-image: linear-gradient(135deg, rgb(203, 201, 207), rgba(39, 155, 143, 0.471));
+} */
+
+.btn_container {
+  position: relative;
+  width: 180px;
+  height: 68px;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+
+.btn_container:hover {
+  transform: scale(1.03);
+}
+
+.btn_container::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  background: linear-gradient(
+    120deg,
+    #ff6f91,
+    #ff9671,
+    #ffc75f,
+    #f9f871,
+    #a2c537,
+    #b39ddb
+  );
+  background-size: 400% 400%;
+  filter: blur(80px);
+  animation: borderRotate 4s ease infinite paused;
+  border-radius: 30px; 
+  z-index: 1;
+}
+
+.btn_container:hover::before {
+  animation-play-state: running;
+}
+
+.join_btn {
+  position: absolute;
+  inset: 8px;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(22px);
+  border-radius: 18px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  color: white;
+  font-weight: 600;
+}
+
+@keyframes borderRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+

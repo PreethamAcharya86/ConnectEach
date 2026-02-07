@@ -1,0 +1,10 @@
+.userDashbaord {
+    background-color: rgb(91, 145, 189);
+}
+.textArea {
+    background-color: aliceblue;
+}
+.uploadBtn {
+    background-color: rgb(115, 174, 221);
+    border: 2px solid black;
+}

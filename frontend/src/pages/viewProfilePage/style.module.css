@@ -1,0 +1,22 @@
+.container {
+    background-color: rgba(211, 215, 227, 0.797);
+}
+.postDiv {
+    background-color: rgb(255, 255, 255);
+}
+.scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(66, 66, 66, 0.45);
+  border-radius: 9999px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 56, 56, 0.65);
+}
