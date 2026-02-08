@@ -163,6 +163,18 @@ export default function DashBoardLayout({ children }) {
                             <PuffLoader loading = {true} color='black' size={60}/>
                         </div>
                     }
+                    {
+                        postState.isLoading &&
+                        <div className='fixed inset-0 w-screen h-screen flex justify-center items-center z-200'>
+                            <PuffLoader loading = {true} color='black' size={60}/>
+                        </div>
+                    }
+                    {
+                        teamState.isLoading &&
+                        <div className='fixed inset-0 w-screen h-screen flex justify-center items-center z-200'>
+                            <PuffLoader loading = {true} color='black' size={60}/>
+                        </div>
+                    }
                     {children}
                 </div>
                 <div className="extraContainer hidden w-full md:flex bg-gray-100 flex-col h-[calc(100vh-118px)]">
