@@ -409,7 +409,7 @@ export default function profilePage() {
                                                         </svg>
                                                     </div>
                                                     <div className='share flex p-1 hover:bg-blue-100 transition  rounded-lg cursor-pointer shadow-md' onClick={async() => {
-                                                        const profileUrl = `${BASE_URL}/viewProfilePage/${post.userId.username}`;   
+                                                        const profileUrl = `https://connect-each.onrender.com/viewProfilePage/${post.userId.username}`;   
                                                         if (navigator.share) {
                                                             await navigator.share({
                                                                 title: "Check this profile",

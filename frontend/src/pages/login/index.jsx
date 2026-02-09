@@ -1,9 +1,9 @@
 import { loginUser, registerUser } from '@/config/redux/action/authAction';
 import { authEmptyMessage } from '@/config/redux/reducer/authReducer';
-import UserLayout from '@/layout/userLayout'
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { BeatLoader } from 'react-spinners';
 
 export default function LoginComponent() {
     const router = useRouter();
@@ -110,13 +110,20 @@ export default function LoginComponent() {
                                 className="input px-3 py-2 rounded-lg border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 outline-none focus:outline-none focus:ring-0 ring-1"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-
-                            <button
-                                className="mt-3 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md"
-                                onClick={userLoginMethod ? handleLogin : handleRegister}
-                            >
-                                {userLoginMethod ? "Login" : "Sign Up"}
-                            </button>
+                            {
+                                authState?.isLoading ?
+                                <div className='mt-3 py-3 rounded-lg bg-blue-600 flex flex-col justify-center items-center shadow-md'>
+                                    <BeatLoader size={14}/> 
+                                </div>
+                                :
+                                <button
+                                    className="mt-3 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md"
+                                    onClick={userLoginMethod ? handleLogin : handleRegister}
+                                >
+                                    {userLoginMethod ? "Login" : "Sign Up"}
+                                </button>
+                            }
+                            
                         </div>
 
                         <p
