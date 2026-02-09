@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import clientServer from "@/config";
 import { getMyTeam } from "../teamAction";
+import { setTokenIsNotThere } from "../../reducer/authReducer";
 
 export const loginUser = createAsyncThunk(
     "user/login",
@@ -60,6 +61,7 @@ export const getAboutUser = createAsyncThunk(
             })
             return thunkAPI.fulfillWithValue(response.data);
         }catch(error) {
+            thunkAPI.dispatch(setTokenIsNotThere())
             return thunkAPI.rejectWithValue(error.response.data)
         }
     }

@@ -48,6 +48,7 @@ const authSlice = createSlice({
             state.message = {
                 message: "Login Successfull"
             };
+            state.isTokenThere = true;
             state.user = action.payload;
         })
         .addCase(loginUser.rejected, (state, action) => {
@@ -80,6 +81,12 @@ const authSlice = createSlice({
         .addCase(getAboutUser.pending, (state) => {
             state.isLoading = true;
         })
+        .addCase(getAboutUser.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isTokenThere = false;
+            state.logedIn = false;
+            state.isError = true;
+        })
         .addCase(getAllUsers.fulfilled, (state,action) => {
             state.isLoading = false;
             state.isError = false;
@@ -100,11 +107,14 @@ const authSlice = createSlice({
             state.myConnections = [...action.payload.connections];
             
         })
-        .addCase(sendConnectionRequest.fulfilled, (state,action) => {
+        .addCase(sendConnectionRequest.pending, (state,action) => {
             state.message = action.payload;
         })
         .addCase(sendConnectionRequest.rejected, (state,action) => {
-            state.message = action.payload
+            state.isLoading = true;
+        })
+        .addCase(sendConnectionRequest.fulfilled, (state,action) => {
+            state.message = action.payload;
         })
         .addCase(searchUsers.rejected, (state, action) => {
             state.isLoading = false;

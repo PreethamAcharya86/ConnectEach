@@ -39,10 +39,14 @@ export default function DashBoardLayout({ children }) {
         }
     }, [teamState.message])
     useEffect(() => {
+        if(!authState.isTokenThere && !authState.logedIn && authState.isError) {
+            router.push("/login")
+        }
+    },[authState.isTokenThere])
+    useEffect(() => {
         if(localStorage.getItem('token') === null) {
             router.push("/login")
         }
-        
         dispatch(getConnectionRequest({ token : localStorage.getItem("token") }))
         dispatch(getMyConnections({ token : localStorage.getItem("token")} ))
         setActive(router.pathname);

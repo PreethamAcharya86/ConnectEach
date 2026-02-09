@@ -20,7 +20,6 @@ export const createTeam = createAsyncThunk(
             thunkAPI.dispatch(getMyTeam({ token: teamData.token }))
             return thunkAPI.fulfillWithValue(response.data);
         }catch(error) {
-            console.log(error.message)
             return thunkAPI.rejectWithValue(error.response.data);
         }
     }

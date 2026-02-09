@@ -16,7 +16,7 @@ export default function index() {
     const overlayRef = useRef(null);
     const router = useRouter();
     const dispatch = useDispatch()
-    
+
     useEffect(() => {
         dispatch(getMyTeam({
             token : localStorage.getItem("token")
@@ -25,6 +25,7 @@ export default function index() {
     useEffect(() => {
         dispatch(getAboutUser({ token: localStorage.getItem("token") }));
         dispatch(getAllUsers({ token :localStorage.getItem("token")}))
+        
     }, [])
     return (
         <UserLayout>
@@ -38,7 +39,7 @@ export default function index() {
                         }}>Create Team</button>
                     </div>
                     {
-                        teamState?.myTeams.length === 0 &&
+                        teamState?.myTeams?.length === 0 &&
                         <div className='flex justify-center items-center flex-shrink-0'>
                             <img src="/images/not_in_any_team.png" alt="No team found" className='h-80 object-cover pt-20 '/>
                         </div>
@@ -88,8 +89,6 @@ export default function index() {
                             </div>
                         }
                     </Context.Provider>
-                   
-                    
                 </div>
             </DashBoardLayout>
         </UserLayout>

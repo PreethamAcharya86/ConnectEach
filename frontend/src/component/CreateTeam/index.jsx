@@ -12,25 +12,21 @@ export default function CreateTeam() {
     const dispatch = useDispatch();
 
     const handleCreateTeam = async() => {
-            dispatch(createTeam({
-                token: localStorage.getItem("token"),
-                teamName: teamName,
-                file : filecontent
-            }));
-            if(teamState?.isError) {
-                setOpenCreateTeam(true);
-            }
-            else {
-                setOpenCreateTeam(false);
-            }
+        dispatch(createTeam({
+            token: localStorage.getItem("token"),
+            teamName: teamName,
+            file : filecontent
+        }));
+        if(teamState?.teamCreated || teamState.isError) {
+            setOpenCreateTeam(false);
+        }
+        else {
+            setOpenCreateTeam(true);
+        }
     }
     
   return (
         <div className='bg-white w-full max-w-lg mx-4 p-6 rounded-xl shadow-xl flex justify-center items-center ring-2 ring-black flex-col gap-2'>
-            {
-                teamState?.message &&
-                <p>{teamState?.message}</p>
-            }
             <div className='flex w-full justify-between gap-3'>
                 <div className='flex flex-col w-full'>
                     <label className="mb-1 text-gray-600 font-medium self-start">Team name</label>

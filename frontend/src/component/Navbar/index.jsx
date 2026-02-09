@@ -79,7 +79,7 @@ export default function NavBarComponent(){
                 }
             </nav>
             <div className='flex justify-end md:hidden p-0.5'>
-                <div className='p-1 hover:bg-blue-100 rounded-lg' onClick={() => {
+                <div className='p-2 hover:bg-blue-100 rounded-lg' onClick={() => {
                     setMenu(true);
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -136,7 +136,7 @@ export default function NavBarComponent(){
                                 </div>
                                 { 
                                     authState.profileFetched && authState.profileFetched? 
-                                    <div className='w-full rounded-lg p-0.5 flex !mt-auto'>
+                                    <div className='w-full rounded-lg p-0.5 flex'>
                                         <div className='flex p-1.5 px-4 border-2 border-blue-400 hover:bg-red-100 transition delay-50 hover:border-red-500 justify-center rounded-lg items-center cursor-pointer' onClick={() => {
                                             localStorage.removeItem("token")
                                             dispatch(teamReset());

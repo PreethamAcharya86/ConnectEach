@@ -25,21 +25,16 @@ export default function LoginComponent() {
     };
 
     useEffect(() => {
-        if (authState.loggedIn) {
+        if (authState.logedIn && authState.isTokenThere) {
             router.push("/dashboard");
         }
-    }, [authState.loggedIn]);
+    }, [authState.logedIn, authState.isTokenThere]);
 
     useEffect(() => {
         setTimeout(() => {
             dispatch(authEmptyMessage())
         }, 5000);
     },[authState.message])
-    useEffect(() => {
-        if (localStorage.getItem("token")) {
-            router.push("/dashboard");
-        }
-    });
     return (
             <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-100 via-white to-blue-200 px-4">
                 <div className="w-full max-w-5xl bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden grid md:grid-cols-2">

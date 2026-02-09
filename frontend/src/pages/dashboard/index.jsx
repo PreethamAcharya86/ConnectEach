@@ -8,7 +8,7 @@ import { BASE_URL } from '@/config';
 import styles from './style.module.css'
 import EmojiPicker from 'emoji-picker-react';
 import { useRouter } from 'next/router';
-import { setTokenIsThere } from '@/config/redux/reducer/authReducer';
+import { authEmptyMessage, setTokenIsThere } from '@/config/redux/reducer/authReducer';
 export default function Dashboard() {
     const dispatch = useDispatch();
     const authState = useSelector((state) => state.auth);
@@ -31,11 +31,11 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
+        dispatch(authEmptyMessage())
         dispatch(setTokenIsThere())
         if(authState.isTokenThere) {
             dispatch(getAllPosts());
             dispatch(getAboutUser({ token : localStorage.getItem("token") }))
-            
         }
         if(!authState.all_profile_fetched) {
             dispatch(getAllUsers());

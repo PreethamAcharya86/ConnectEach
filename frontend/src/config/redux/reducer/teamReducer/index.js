@@ -5,6 +5,7 @@ const initialState = {
   isError: false,
   isLoading: false,
   isSuccess: false,
+  teamCreated : false,
   message: "",
   all_teams: [],
   team_chat: [],
@@ -24,9 +25,6 @@ const teamSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder;
-  },
-  extraReducers: (builder) => {
     builder
       .addCase(createTeam.pending, (state) => {
         state.isLoading = true;
@@ -34,10 +32,12 @@ const teamSlice = createSlice({
       .addCase(createTeam.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
+        state.teamCreated = false;
         state.message = action.payload;
       })
       .addCase(createTeam.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.teamCreated = true;
         state.isError = false;
         state.isSuccess = true;
         state.message = action.payload;
@@ -45,7 +45,7 @@ const teamSlice = createSlice({
       .addCase(getMyTeam.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.isError = false;
+        state.team = false;
         state.myTeams = action.payload;
       })
       .addCase(getMyTeam.pending, (state) => {
@@ -54,6 +54,7 @@ const teamSlice = createSlice({
       .addCase(getMyTeam.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
+        state.teamCreated = false;
       })
       .addCase(getChat.pending, (state) => {
         state.isLoading = true;

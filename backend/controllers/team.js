@@ -21,7 +21,7 @@ export const createTeam = async(req,res) => {
         await newTeam.save();
         res.status(200).json({ message: "Team Created Successfully"})
     }catch(error) {
-        res.status(500).json({ msg: error });
+        res.status(500).json({ msg: error.message });
     }
 }
 export const postChat = async(req,res) => {
@@ -106,7 +106,7 @@ export const getMyTeam = async(req,res) => {
     try {
         const user = await User.findOne({ token });
         if(!user) {
-            return res.status(404).json({ message : "user not found!" });
+            return res.status(404).json({ msg : "user not found!" });
         }
         const teams = await Team.find({ 
             $or : [
@@ -115,11 +115,11 @@ export const getMyTeam = async(req,res) => {
             ]
         }).populate("members")
         if(teams.length == 0) {
-            return res.status(404).json({ msg: "User not in any team"});
+            return res.status(200).json([]);
         }
         return res.status(200).json(teams);
     } catch(error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ msg: error });
     }
 }
 
@@ -129,7 +129,7 @@ export const getTeam = async(req,res) => {
         const teamData = await Team.findOne({ _id: teamId }).populate("createdBy members")
         return res.json({ teamData });
     }catch(error) {
-        return res.status(500).json({message: error.message});
+        return res.status(500).json({msg: error.message});
     }
 }
 
@@ -137,7 +137,7 @@ export const getTeam = async(req,res) => {
 export const addTeamMembers = async(req,res) => {
     const {token, teamId,  members } = req.body;
     if (!token || !teamId || !members) {
-        return res.status(400).json({ message: "Some parameters are missing" });
+        return res.status(400).json({ ErrMsg: "Some parameters are missing" });
     }
     try {
         const user = await User.findOne({ token });
