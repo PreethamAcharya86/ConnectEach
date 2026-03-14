@@ -57,7 +57,7 @@ export default function DashBoardLayout({ children }) {
              <div className= {`${styles.homeContainer} homeContainer flex justify-between items-start`}>
                 <div className={`${styles.navigate} homeContainer_left rounded p-1 flex flex-col hidden md:flex justify-start items-start gap-2 w-full`}>
                     <div className='flex flex-col w-full gap-2'>
-                        <p className='text-center text-xl font-semibold w-40'>Your profile</p>
+                        <p className='text-center text-xlz font-semibold w-40'>Your profile</p>
                         <div className="flex w-full p-0.5 cursor-pointer ring-2 ring-blue-400 hover:shadow-xl transition delay-100 shadow-lg gap-2 flex-col rounded-md" onClick={() => {
                             router.push("/profile")
                         }}>

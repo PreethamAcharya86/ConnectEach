@@ -78,7 +78,12 @@ export default function LoginComponent() {
                             </div>
                         }
 
-                        <div className="w-full max-w-sm flex flex-col gap-3 mt-4">
+                        <div className="w-full max-w-sm flex flex-col gap-3 mt-4" 
+                            onKeyDown={(e) => {
+                                if(e.key == "Enter") {
+                                    userLoginMethod ? handleLogin() : handleRegister();
+                                }
+                            }}>
                             {
                             !userLoginMethod && (
                                 <>
@@ -118,7 +123,9 @@ export default function LoginComponent() {
                                 :
                                 <button
                                     className="mt-3 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md"
-                                    onClick={userLoginMethod ? handleLogin : handleRegister}
+                                    onClick={() => {
+                                        userLoginMethod ? handleLogin : handleRegister;
+                                    }}
                                 >
                                     {userLoginMethod ? "Login" : "Sign Up"}
                                 </button>

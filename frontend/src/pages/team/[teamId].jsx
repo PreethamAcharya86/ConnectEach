@@ -48,7 +48,7 @@ export default function index({ teamData }) {
     return (
         <UserLayout>
             <DashBoardLayout>
-                <div className='flex flex-col items-between md:h-[83vh] h-[100vh] gap-1 bg-gray-300 p-1'>
+                <div className='flex flex-col items-between md:h-[83vh] h-[85vh] gap-1 bg-gray-300 p-1'>
                     <div className='flex flex-col'>
                         <div className='flex gap-2 items-center'>
                             <img src={`${BASE_URL}/${teamData?.teamPitcure}`} alt="team icon" className='h-10 w-10 rounded-full' />

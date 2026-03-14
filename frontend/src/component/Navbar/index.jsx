@@ -78,7 +78,12 @@ export default function NavBarComponent(){
                     
                 }
             </nav>
-            <div className='flex justify-end md:hidden p-0.5'>
+            <div className='flex justify-between md:hidden bg-blue-50 p-0.5'>
+                <div className='flex justify-center items-center px-2 cursor-pointer hover:text-blue-600 text-blue-500' onClick={() => {
+                    router.push("/")
+                }}>
+                    <p className='text-center font-semibold'>Connect<span className='text-gray-600'>Each</span></p>
+                </div>
                 <div className='p-2 hover:bg-blue-100 rounded-lg' onClick={() => {
                     setMenu(true);
                 }}>
