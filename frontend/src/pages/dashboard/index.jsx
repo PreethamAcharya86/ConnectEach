@@ -96,7 +96,7 @@ export default function Dashboard() {
                                 el.style.height = el.scrollHeight + "px";
                                 }} value={postContent}
                                 onKeyDown={(e) => {
-                                    if(e.key === "Enter" && !e.shiftKey) {
+                                    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                                         e.preventDefault();
                                         handleUpload();
                                     }
@@ -144,7 +144,7 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                         <div className='flex'>
-                                            <p className='text-gray-600'>{post?.body}</p>
+                                            <p className='text-gray-600 whitespace-pre-wrap break-words'>{post?.body}</p>
                                         </div>
                                         
                                         {

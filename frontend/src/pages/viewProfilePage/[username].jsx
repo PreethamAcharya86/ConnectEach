@@ -364,7 +364,7 @@ export default function viewProfilePage({ userProfile }) {
                                                     <p className='text-sm text-gray-500'>{formatDate(post.createdAt)}</p>
                                                 </div>
                                                 <div className='flex'>
-                                                    <p>{ post.body }</p>
+                                                    <p className='whitespace-pre-wrap break-words'>{ post.body }</p>
                                                     {
                                                         post?.userId?._id == authState?.user?.userId?._id &&
                                                             <div className='!ml-auto p-2 h-10 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1] transition-all duration-300 cursor-pointer' onClick={ async (event) => {

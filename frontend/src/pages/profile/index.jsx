@@ -354,7 +354,7 @@ export default function profilePage() {
                                                     </p>
                                                 </div>
                                                 <div className='flex'>
-                                                    <p>{ post.body }</p>
+                                                    <p className='whitespace-pre-wrap break-words'>{ post.body }</p>
                                                     {
                                                         post?.userId?._id == userProfile?.userId?._id &&
                                                             <div className='!ml-auto p-2 h-10 rounded-xl shadow-lg hover:shadow-xl hover:bg-red-100 transition-all duration-300 cursor-pointer' onClick={ async (event) => {
