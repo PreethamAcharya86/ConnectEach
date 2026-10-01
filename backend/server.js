@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import postRoutes from "./routes/posts_routes.js";
 import userRoutes from "./routes/user_routes.js";
 import teamRoutes from "./routes/team_routes.js";
+import aiRoutes from "./routes/ai_routes.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ const port = process.env.PORT || 5000;
 app.use(postRoutes);
 app.use(userRoutes);
 app.use(teamRoutes);
+app.use(aiRoutes);
 
 const connectData = async() => {
     try {

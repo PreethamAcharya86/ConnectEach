@@ -1,4 +1,5 @@
 import { deleteEducation, deleteWorkHistory, getAboutUser, updateProfile, updateUser } from '@/config/redux/action/authAction';
+import clientServer from '@/config';
 import DashBoardLayout from '@/layout/DashBoardLayout'
 import UserLayout from '@/layout/userLayout'
 import { useRouter } from 'next/router';
@@ -15,11 +16,31 @@ export default function index() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [bio, setBio] = useState("");
+    const [isPolishing, setIsPolishing] = useState(false);
+    const [polishError, setPolishError] = useState("");
     const [currentPost, setCurrentPost] = useState("");
     const [inputData, setInputData] = useState({ school: "", degree: "", fieldOfStudy: ""});
     const [workData, setWorkData] = useState({ company: "", position: "", years: ""});
     const [openEducationInput, setOpenEducationInput] = useState(false);
     const [openWorkInput, setOpenWorkInput] = useState(false);
+
+    const handlePolishBio = async () => {
+        const textToPolish = bio || authState?.user?.bio;
+        if (!textToPolish || !textToPolish.trim()) return;
+        setIsPolishing(true);
+        setPolishError("");
+        try {
+            const response = await clientServer.post("/polish-bio", { bio: textToPolish });
+            if (response.data && response.data.polishedBio) {
+                setBio(response.data.polishedBio);
+            }
+        } catch (err) {
+            console.error("Failed to polish bio:", err);
+            setPolishError("Failed to polish bio. Please try again.");
+        } finally {
+            setIsPolishing(false);
+        }
+    };
 
 
     const handleEductaionInput = (e) => {
@@ -109,17 +130,44 @@ export default function index() {
                         />
                     </div>
                     <div className='flex flex-col items-center justify-center w-2/3 md:px-0'>
-                        <label className="mb-1 text-gray-600 font-medium self-start">Bio</label>
+                        <div className='flex justify-between items-center w-full mb-1'>
+                            <label className="text-gray-600 font-medium">Bio</label>
+                            <button
+                                type="button"
+                                onClick={handlePolishBio}
+                                disabled={isPolishing || !(bio?.trim() || authState?.user?.bio?.trim())}
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm cursor-pointer"
+                                title="Polish with AI"
+                            >
+                                {isPolishing ? (
+                                    <>
+                                        <svg className="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Polishing...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>✨</span>
+                                        <span>Polish with AI</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
                         <textarea
-                        rows={2}
+                        rows={3}
                         type="text"
                         className="w-full px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 placeholder-gray-400 shadow-[0_4px_12px_rgba(96,165,250,0.3)] focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-                        placeholder={authState?.user?.bio}
+                        placeholder={authState?.user?.bio || "Write your bio..."}
                         value={bio}
                         onChange={(e) => {
                             setBio(e.target.value)
                         }}
                         />
+                        {polishError && (
+                            <span className="text-xs text-red-500 self-start mt-1">{polishError}</span>
+                        )}
                     </div>
                     <div className='flex flex-col items-center justify-center w-2/3 md:px-0'>
                         <label className="mb-1 text-gray-600 font-medium self-start">Profession</label>

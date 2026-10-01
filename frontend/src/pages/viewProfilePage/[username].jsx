@@ -1,7 +1,7 @@
 import clientServer, { BASE_URL } from '@/config';
 import DashBoardLayout from '@/layout/DashBoardLayout';
 import UserLayout from '@/layout/userLayout';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import EmojiPicker from 'emoji-picker-react';
 import styles from './style.module.css'
 import { useRouter } from 'next/router';
@@ -20,6 +20,44 @@ export default function viewProfilePage({ userProfile }) {
     const [openConnection, setOpenConnection] = useState(false);
     const [showEmoji, setShowEmoji] = useState(false);
     const [comment, setComment] = useState("")
+
+    const [openBriefModal, setOpenBriefModal] = useState(false);
+    const [briefText, setBriefText] = useState("");
+    const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
+    const [briefError, setBriefError] = useState("");
+    const [briefCopied, setBriefCopied] = useState(false);
+    const briefModalRef = useRef(null);
+
+    const handleGetBrief = async () => {
+        setOpenBriefModal(true);
+        setIsGeneratingBrief(true);
+        setBriefText("");
+        setBriefError("");
+        setBriefCopied(false);
+
+        try {
+            const payload = {
+                name: userProfile?.userId?.name,
+                currentPost: userProfile?.currentPost,
+                bio: userProfile?.bio,
+                skills: userProfile?.skills || [],
+                education: userProfile?.education || [],
+                pastWork: userProfile?.pastWork || []
+            };
+
+            const res = await clientServer.post("/summarize-profile", payload);
+            if (res.data?.summary) {
+                setBriefText(res.data.summary);
+            } else {
+                setBriefError("Could not generate profile brief.");
+            }
+        } catch (err) {
+            console.error("Error generating profile brief:", err);
+            setBriefError(err.response?.data?.message || err.message || "Failed to generate brief.");
+        } finally {
+            setIsGeneratingBrief(false);
+        }
+    };
     
     const postState = useSelector((state) => state.posts);
 
@@ -84,12 +122,12 @@ export default function viewProfilePage({ userProfile }) {
                         <p className='font-bold'>{userProfile.userId.name}</p>
                         <p>{userProfile?.userId?.email}</p>
                     </div>
-                    <div className='connection-button flex text-sm gap-2'>
+                    <div className='connection-button flex text-sm gap-2 flex-wrap items-center'>
                         {
                             isConnected ? <button className='bg-white p-2 ring-2 ring-blue-400 ring-inset rounded-lg'>{
                                 isConnectionNull? "Pending" : "Connected"
                             }</button> :
-                            <button className='py-1 px-2 bg-blue-500 rounded-xl' onClick={() => {
+                            <button className='py-1 px-2 bg-blue-500 text-white rounded-xl' onClick={() => {
                                 dispatch(sendConnectionRequest({ 
                                     token: localStorage.getItem("token"),
                                     connectionId: userProfile.userId._id
@@ -114,6 +152,15 @@ export default function viewProfilePage({ userProfile }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                             </svg>
                         </div>
+                        <button
+                            type="button"
+                            onClick={handleGetBrief}
+                            className='py-1.5 px-3 flex gap-1.5 justify-center items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition cursor-pointer'
+                            title="Get an AI brief about this person"
+                        >
+                            <span>✨</span>
+                            <span>Get Brief</span>
+                        </button>
                     </div>
                     {
                         openConnection &&
@@ -453,6 +500,96 @@ export default function viewProfilePage({ userProfile }) {
                             </div>
                         }
                     </div>
+
+                    {/* AI Profile Brief Modal */}
+                    {openBriefModal && (
+                        <div
+                            className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4'
+                            ref={briefModalRef}
+                            onClick={(e) => {
+                                if (briefModalRef.current === e.target) {
+                                    setOpenBriefModal(false);
+                                }
+                            }}
+                        >
+                            <div className='bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden border border-gray-100'>
+                                {/* Header */}
+                                <div className='flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50'>
+                                    <div className='flex items-center gap-3'>
+                                        <img
+                                            src={`${BASE_URL}/${userProfile?.userId?.profilePicture}`}
+                                            alt={userProfile?.userId?.name}
+                                            className='h-10 w-10 rounded-full object-cover ring-2 ring-blue-200'
+                                        />
+                                        <div>
+                                            <h2 className='font-bold text-gray-800 text-base'>
+                                                {userProfile?.userId?.name}
+                                            </h2>
+                                            <span className='text-xs text-blue-600 font-medium flex items-center gap-1'>
+                                                ✨ AI Profile Brief
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setOpenBriefModal(false)}
+                                        className='text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-white/80 transition cursor-pointer text-xl leading-none'
+                                        title="Close"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+
+                                {/* Body */}
+                                <div className='p-6 overflow-y-auto flex-1 text-sm text-gray-700'>
+                                    {isGeneratingBrief ? (
+                                        <div className='flex flex-col items-center justify-center py-12 gap-3 text-center'>
+                                            <div className='w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin'></div>
+                                            <p className='font-semibold text-gray-700'>Generating professional brief with Groq AI...</p>
+                                            <p className='text-xs text-gray-400'>Analyzing bio, skills, education, and experience</p>
+                                        </div>
+                                    ) : briefError ? (
+                                        <div className='p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center flex flex-col gap-2'>
+                                            <p className='font-medium'>{briefError}</p>
+                                            <button
+                                                onClick={handleGetBrief}
+                                                className='self-center px-4 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 transition cursor-pointer'
+                                            >
+                                                Try Again
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className='space-y-3'>
+                                            <div className='whitespace-pre-wrap leading-relaxed text-gray-800 bg-gray-50/70 p-4 rounded-xl border border-gray-100 font-sans'>
+                                                {briefText}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Footer */}
+                                <div className='px-6 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50'>
+                                    {briefText && !isGeneratingBrief && !briefError ? (
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(briefText);
+                                                setBriefCopied(true);
+                                                setTimeout(() => setBriefCopied(false), 2000);
+                                            }}
+                                            className='text-xs text-gray-600 hover:text-blue-600 font-medium flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-white border border-gray-200 transition cursor-pointer'
+                                        >
+                                            {briefCopied ? '✓ Copied!' : '📋 Copy Brief'}
+                                        </button>
+                                    ) : <div></div>}
+                                    <button
+                                        onClick={() => setOpenBriefModal(false)}
+                                        className='px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition cursor-pointer'
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </DashBoardLayout>
         </UserLayout>
