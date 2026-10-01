@@ -28,6 +28,41 @@ export default function viewProfilePage({ userProfile }) {
     const [briefCopied, setBriefCopied] = useState(false);
     const briefModalRef = useRef(null);
 
+    const [postSummaries, setPostSummaries] = useState({});
+    const [loadingSummaryPostId, setLoadingSummaryPostId] = useState(null);
+    const [openSummaryPostId, setOpenSummaryPostId] = useState({});
+
+    const handleSummarizePost = async (postId, body) => {
+        if (!body || !body.trim()) {
+            alert("This post does not have any text to summarize.");
+            return;
+        }
+
+        if (openSummaryPostId[postId]) {
+            setOpenSummaryPostId((prev) => ({ ...prev, [postId]: false }));
+            return;
+        }
+
+        if (postSummaries[postId]) {
+            setOpenSummaryPostId((prev) => ({ ...prev, [postId]: true }));
+            return;
+        }
+
+        setLoadingSummaryPostId(postId);
+        try {
+            const res = await clientServer.post("/summarize-post", { description: body });
+            if (res.data && res.data.summary) {
+                setPostSummaries((prev) => ({ ...prev, [postId]: res.data.summary }));
+                setOpenSummaryPostId((prev) => ({ ...prev, [postId]: true }));
+            }
+        } catch (err) {
+            console.error("Failed to summarize post", err);
+            alert(err.response?.data?.message || "Failed to summarize post");
+        } finally {
+            setLoadingSummaryPostId(null);
+        }
+    };
+
     const handleGetBrief = async () => {
         setOpenBriefModal(true);
         setIsGeneratingBrief(true);
@@ -350,56 +385,97 @@ export default function viewProfilePage({ userProfile }) {
                                                         <img src={`${BASE_URL}/${post.media}`} alt="Profile" className='h-50 object-cover rounded-lg' />
                                                     </div>
                                                 }
-                                                
-                                                 <div className = "flex justify-between items-center">
-                                                    <div className='likes flex p-1 rounded-lg cursor-pointer shadow-md' onClick={
-                                                        async () => {
-                                                            await dispatch(likePost({
+                                                                                                 <div className = "flex justify-between items-center">
+                                                    <div className='flex gap-2 items-center'>
+                                                        <div className='likes flex p-1 rounded-lg cursor-pointer shadow-md' onClick={
+                                                            async () => {
+                                                                await dispatch(likePost({
+                                                                    postId : post._id
+                                                                }))
+                                                                await dispatch(getAllPosts());
+                                                        }}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill= 
+                                                                {                                                
+                                                                    post.likes.includes(authState?.user?.userId?._id)   ?
+                                                                    "red":"none"
+                                                                } 
+                                                                viewBox="0 0 24 24" strokeWidth={1.5} stroke= 
+                                                                {                                                
+                                                                    post.likes.includes(authState?.user?.userId?._id) ?
+                                                                        "red":"currentColor"
+                                                                } className="size-5">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                                            </svg>
+                                                            <p className='text-sm'>{post.likes.length}</p>
+                                                        </div>
+                                                        <div className='comment flex p-1 rounded-lg cursor-pointer shadow-md' onClick={() => {
+                                                            setShowEmoji(false)
+                                                            dispatch(getComments({
                                                                 postId : post._id
                                                             }))
-                                                            await dispatch(getAllPosts());
-                                                    }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill= 
-                                                            {                                                
-                                                                post.likes.includes(authState?.user?.userId?._id)   ?
-                                                                "red":"none"
-                                                            } 
-                                                            viewBox="0 0 24 24" strokeWidth={1.5} stroke= 
-                                                            {                                                
-                                                                post.likes.includes(authState?.user?.userId?._id) ?
-                                                                    "red":"currentColor"
-                                                            } className="size-5">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                                        </svg>
-                                                        <p className='text-sm'>{post.likes.length}</p>
+                                                        }}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className='share flex p-1 rounded-lg cursor-pointer shadow-md' onClick={async() => {
+                                                            const profileUrl = `https://connect-each.onrender.com/viewProfilePage/${post.userId.username}`;
+                                                            if (navigator.share) {
+                                                                await navigator.share({
+                                                                title: "Check this profile",
+                                                                text: post.body,
+                                                                url: profileUrl,
+                                                            });
+                                                            } else {
+                                                                alert("Sharing not supported on this browser");
+                                                            }
+                                                        }}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                                                            </svg>
+                                                        </div>
                                                     </div>
-                                                    <div className='comment flex p-1 rounded-lg cursor-pointer shadow-md' onClick={() => {
-                                                        setShowEmoji(false)
-                                                        dispatch(getComments({
-                                                            postId : post._id
-                                                        }))
-                                                    }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div className='share flex p-1 rounded-lg cursor-pointer shadow-md' onClick={async() => {
-                                                        const profileUrl = `https://connect-each.onrender.com/viewProfilePage/${post.userId.username}`;
-                                                        if (navigator.share) {
-                                                            await navigator.share({
-                                                            title: "Check this profile",
-                                                            text: post.body,
-                                                            url: profileUrl,
-                                                        });
-                                                        } else {
-                                                            alert("Sharing not supported on this browser");
-                                                        }
-                                                     }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
-                                                        </svg>
-                                                    </div>
+
+                                                    {post?.body && post.body.trim().length > 0 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleSummarizePost(post._id, post.body)}
+                                                            className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium shadow transition cursor-pointer"
+                                                            title="Summarize post description with AI"
+                                                        >
+                                                            {loadingSummaryPostId === post._id ? (
+                                                                <>
+                                                                    <span className="inline-block animate-spin">⏳</span>
+                                                                    <span>Summarizing...</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <span>✨</span>
+                                                                    <span>{openSummaryPostId[post._id] ? "Hide Summary" : "Summarize"}</span>
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
                                                 </div>
+
+                                                {openSummaryPostId[post._id] && postSummaries[post._id] && (
+                                                    <div className="!mt-1 p-3 bg-blue-50/90 border border-blue-200 rounded-xl text-sm relative transition-all">
+                                                        <div className="flex items-center justify-between pb-1 mb-1.5 border-b border-blue-200/70">
+                                                            <span className="font-semibold text-xs text-blue-800 tracking-wide flex items-center gap-1">
+                                                                ✨ AI Post Summary
+                                                            </span>
+                                                            <button
+                                                                onClick={() => setOpenSummaryPostId(prev => ({ ...prev, [post._id]: false }))}
+                                                                className="text-gray-400 hover:text-gray-600 text-xs font-bold px-1 cursor-pointer"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                        <p className="whitespace-pre-line text-xs leading-relaxed text-gray-700">
+                                                            {postSummaries[post._id]}
+                                                        </p>
+                                                    </div>
+                                                )}
                                                 { postState?.postId === post._id &&   
                                                     <div className='flex flex-col !mt-2'>
                                                         <div className="flex-1 flex flex-col gap-2 md:px-4 sm:px-8">

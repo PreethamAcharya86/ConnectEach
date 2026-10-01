@@ -190,4 +190,58 @@ Keep it clear, professional, concise, and easy to read. Do not make the point ti
     }
 });
 
+router.post("/summarize-post", async (req, res) => {
+    const { description, postContent } = req.body;
+    const text = description || postContent;
+
+    if (!text || !text.trim()) {
+        return res.status(400).json({ message: "Post description is required to summarize" });
+    }
+
+    try {
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ message: "Groq API key is not configured" });
+        }
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-oss-120b",
+                messages: [
+                    {
+                        role: "system",
+                        content: `You are an AI assistant that provides concise, crisp summaries of posts and announcements.
+Summarize the key message, context, and important takeaways of the post in 2-4 lines.
+Keep all headings or section titles as plain text (do NOT make point titles or section names bold).
+Do not include any conversational preamble or markdown bold asterisks.`
+                    },
+                    {
+                        role: "user",
+                        content: `Summarize the following post description:\n\n${text.trim()}`
+                    }
+                ]
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return res.status(response.status).json({
+                message: data.error?.message || "Failed to summarize post with Groq AI"
+            });
+        }
+
+        const summary = data.choices?.[0]?.message?.content?.trim() || "No summary could be generated.";
+        return res.status(200).json({ summary });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "Internal server error" });
+    }
+});
+
 export default router;
+
