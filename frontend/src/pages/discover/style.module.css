@@ -1,3 +1,11 @@
-.message {
-    background-color: rgb(21, 21, 23);
+.container {
+    background-color: #ffffff;
+    min-height: 100%;
+}
+.userCard {
+    background-color: #ffffff;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.userCard:hover {
+    transform: translateY(-2px);
 }
