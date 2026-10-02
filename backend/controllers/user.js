@@ -8,72 +8,140 @@ import fs from 'fs'
 import sharp from "sharp";
 
 const convertUserDataToPDF = async (userData) => {
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ 
+        margin: 40, 
+        size: 'A4'
+    });
+
     const outputPath = crypto.randomBytes(32).toString("hex") + ".pdf";
     const stream = fs.createWriteStream("uploads/" + outputPath);
     doc.pipe(stream);
 
-    const primaryColor = "#1F4ED8";
-    const gray = "#6B7280";
+    const leftMargin = 40;
+    const pageWidth = 515.28; // 595.28 - 80
+    const primaryDark = "#111827";
+    const secondaryDark = "#374151";
+    const bodyText = "#1F2937";
 
-    const originalImgPath = "uploads/" + userData.userId.profilePicture;
-    const convertedImgPath = "uploads/" + crypto.randomBytes(16).toString("hex") + ".png";
-
-    try {
-        await sharp(originalImgPath).png().toFile(convertedImgPath);
-        doc.image(convertedImgPath, 50, 50, { width: 100, height: 100 });
-        stream.on("finish", () => fs.unlink(convertedImgPath, () => {}));
-    } catch {
-        doc.fontSize(10).fillColor(gray).text("Profile picture not available", 50, 90);
-    }
-
-    doc
-        .fontSize(26)
-        .fillColor(primaryColor)
-        .text(userData.userId.name, 170, 50);
-
-    doc
-        .fontSize(12)
-        .fillColor(gray)
-        .text(userData.userId.currentPost || "", 170, 80);
-
-    doc.moveTo(50, 170).lineTo(550, 170).strokeColor(primaryColor).stroke();
-
-    doc.moveDown();
-    doc.fontSize(11).fillColor("black");
-    doc.text(`Username: ${userData.userId.username}`);
-    doc.text(`Email: ${userData.userId.email}`);
-
-    doc.moveDown();
-    doc.fontSize(14).fillColor(primaryColor).text("PROFILE");
-    doc.fontSize(11).fillColor("black").text(userData.bio || "No bio provided", {
-        width: 500,
-        align: "left",
+    // Candidate Header - Centered
+    const name = userData?.userId?.name ? userData.userId.name.toUpperCase() : "PROFILE RESUME";
+    doc.fontSize(22).font("Helvetica-Bold").fillColor(primaryDark).text(name, leftMargin, 40, {
+        align: "center",
+        width: pageWidth
     });
 
-    doc.moveDown();
-    doc.fontSize(14).fillColor(primaryColor).text("SKILLS");
-    doc.fontSize(11).fillColor("black");
-
-    userData.skills.forEach((skill, index) => {
-        doc.text(`• ${skill}`);
-    });
-    if(Array.isArray(userData.pastWork) && userData.pastWork.length > 0) {
-        doc.moveDown();
-        doc.fontSize(14).fillColor(primaryColor).text("EXPERIENCE");
-        doc.fillColor("black");
-        doc.moveDown(0.5);
-        userData.pastWork.forEach((work) => {
-            doc.fontSize(13).font("Helvetica-Bold").text(work.company);
-
-            doc.fontSize(11).font("Helvetica")
-            .text(`${work.position} | ${work.years}`, { indent: 10 });
-            doc.moveDown(0.5);
+    // Headline / Current Post
+    if (userData?.currentPost) {
+        doc.fontSize(10.5).font("Helvetica").fillColor(secondaryDark).text(userData.currentPost, {
+            align: "center",
+            width: pageWidth
         });
     }
-    
+
+    // Contact Information Bar
+    const email = userData?.userId?.email || "";
+    const username = userData?.userId?.username ? `@${userData.userId.username}` : "";
+    const contactParts = [email, username, "ConnectEach Member"].filter(Boolean);
+    const contactLine = contactParts.join("   |   ");
+
+    doc.moveDown(0.3);
+    doc.fontSize(9.5).font("Helvetica").fillColor(secondaryDark).text(contactLine, {
+        align: "center",
+        width: pageWidth
+    });
+
+    // Top Divider Line
+    doc.moveDown(0.6);
+    let topDividerY = doc.y;
+    doc.moveTo(leftMargin, topDividerY).lineTo(leftMargin + pageWidth, topDividerY).lineWidth(0.75).strokeColor(primaryDark).stroke();
+    doc.y = topDividerY + 6;
+
+    // Helper for Section Headers
+    const addSectionHeader = (title) => {
+        doc.moveDown(0.6);
+        const y = doc.y;
+        doc.fontSize(11).font("Helvetica-Bold").fillColor(primaryDark).text(title.toUpperCase(), leftMargin, y);
+        const lineY = doc.y + 2;
+        doc.moveTo(leftMargin, lineY).lineTo(leftMargin + pageWidth, lineY).lineWidth(0.75).strokeColor(primaryDark).stroke();
+        doc.y = lineY + 6;
+    };
+
+    // PROFESSIONAL SUMMARY / BIO
+    if (userData?.bio && userData.bio.trim().length > 0) {
+        addSectionHeader("PROFESSIONAL SUMMARY");
+        doc.fontSize(9.5).font("Helvetica").fillColor(bodyText).text(userData.bio, leftMargin, doc.y, {
+            width: pageWidth,
+            align: "justify",
+            lineGap: 2.5
+        });
+    }
+
+    // WORK EXPERIENCE
+    if (Array.isArray(userData?.pastWork) && userData.pastWork.length > 0) {
+        addSectionHeader("WORK EXPERIENCE");
+        userData.pastWork.forEach((work) => {
+            const startY = doc.y;
+            // Company Name
+            doc.fontSize(10.5).font("Helvetica-Bold").fillColor(primaryDark).text(work.company || "Company", leftMargin, startY, {
+                width: pageWidth
+            });
+
+            // Years / Duration (Right aligned on same line)
+            if (work.years) {
+                doc.fontSize(9.5).font("Helvetica").fillColor(secondaryDark).text(work.years, leftMargin, startY, {
+                    width: pageWidth,
+                    align: "right"
+                });
+            }
+
+            // Position / Title
+            if (work.position) {
+                doc.fontSize(9.5).font("Helvetica-Oblique").fillColor(secondaryDark).text(work.position, leftMargin, doc.y, {
+                    width: pageWidth
+                });
+            }
+
+            doc.moveDown(0.4);
+        });
+    }
+
+    // EDUCATION
+    if (Array.isArray(userData?.education) && userData.education.length > 0) {
+        addSectionHeader("EDUCATION");
+        userData.education.forEach((edu) => {
+            const startY = doc.y;
+            doc.fontSize(10.5).font("Helvetica-Bold").fillColor(primaryDark).text(edu.school || "Institution", leftMargin, startY, {
+                width: pageWidth
+            });
+
+            const degreeText = [edu.degree, edu.fieldOfStudy].filter(Boolean).join(" in ");
+            if (degreeText) {
+                doc.fontSize(9.5).font("Helvetica-Oblique").fillColor(secondaryDark).text(degreeText, leftMargin, doc.y, {
+                    width: pageWidth
+                });
+            }
+
+            doc.moveDown(0.4);
+        });
+    }
+
+    // SKILLS
+    if (Array.isArray(userData?.skills) && userData.skills.length > 0) {
+        addSectionHeader("SKILLS");
+        const formattedSkills = userData.skills.map(s => `• ${s}`).join("     ");
+        doc.fontSize(9.5).font("Helvetica").fillColor(bodyText).text(formattedSkills, leftMargin, doc.y, {
+            width: pageWidth,
+            lineGap: 4
+        });
+        doc.moveDown(0.4);
+    }
+
     doc.end();
-    return outputPath;
+
+    return new Promise((resolve, reject) => {
+        stream.on("finish", () => resolve(outputPath));
+        stream.on("error", (err) => reject(err));
+    });
 };
 
 
@@ -290,8 +358,20 @@ export const getAllProfiles = async(req,res) => {
 export const downloadProfile = async(req,res) => {
     const user_id = req.query.id;
     try {
-        const profile = await Profile.findOne({ userId: user_id }).populate('userId', 'name username email profilePicture');
-        const convert_data =  await convertUserDataToPDF(profile);
+        let profile = await Profile.findOne({ userId: user_id }).populate('userId', 'name username email profilePicture');
+        if (!profile) {
+            const user = await User.findById(user_id);
+            if (!user) return res.status(404).json({ msg: "User not found" });
+            profile = {
+                userId: user,
+                bio: "",
+                currentPost: "",
+                skills: [],
+                education: [],
+                pastWork: []
+            };
+        }
+        const convert_data = await convertUserDataToPDF(profile);
         return res.json({ convert_data });
     }catch(error) {
         res.status(500).json({msg: error.message});
