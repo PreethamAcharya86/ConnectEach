@@ -162,9 +162,6 @@ Key Highlights & Skills
 Background & Experience
 - Bullet points summarizing their educational background and work history.
 
-Best Fit For
-- A brief sentence highlighting what roles, collaborations, or projects they would excel in.
-
 Keep it clear, professional, concise, and easy to read. Do not make the point title bold keep as a plain text.`
                     },
                     {
