@@ -97,12 +97,12 @@ export default function NavBarComponent(){
                 menu &&
                     <div className="fixed inset-0 z-50 md:hidden bg-black/30 "
                         onClick={() => setMenu(false)}>
-                        <div className="h-screen w-3/4 bg-white p-4"
+                        <div className="h-screen w-3/4 bg-white p-4 flex flex-col overflow-y-auto"
                             onClick={
                                 (e) => e.stopPropagation()
                             }
                         >
-                            <div className='flex h-full flex-col gap-2 px-2'>
+                            <div className='flex h-full flex-col gap-2 px-2 justify-between'>
                                 <div className='py-1 px-2 !m-0.5 text-xl font-bold text-blue-500 hover:text-blue-600 rounded cursor-pointer' onClick={() => {router.push("/")}}>
                                     ConnectEach
                                 </div>
@@ -151,8 +151,8 @@ export default function NavBarComponent(){
                                             <p className='text-center'>Logout</p>
                                         </div>
                                     </div> :
-                                    <div className='p-1 rounded-lg !mt-auto w-full p-0.5 flex'>
-                                        <div className='flex p-2  border-2 border-blue-400 hover:bg-green-50 transition delay-50 px-4 hover:border-green-500 justify-center rounded-lg items-center cursor-pointer' 
+                                    <div className='rounded-lg mt-auto w-full py-2 flex'>
+                                        <div className='flex p-2 w-full border-2 border-blue-400 hover:bg-green-50 transition delay-50 px-4 hover:border-green-500 justify-center rounded-lg items-center cursor-pointer' 
                                         onClick={() => {router.push("/login")}}>
                                             <p className='text-center'>Login</p>
                                         </div>
