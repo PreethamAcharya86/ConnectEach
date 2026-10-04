@@ -78,25 +78,27 @@ export default function LoginComponent() {
                             </div>
                         }
 
-                        <div className="w-full max-w-sm flex flex-col gap-3 mt-4" 
-                            onKeyDown={(e) => {
-                                if(e.key == "Enter") {
-                                    userLoginMethod ? handleLogin() : handleRegister();
-                                }
-                            }}>
-                            {
-                            !userLoginMethod && (
+                        <form 
+                            className="w-full max-w-sm flex flex-col gap-3 mt-4" 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                userLoginMethod ? handleLogin() : handleRegister();
+                            }}
+                        >
+                            {!userLoginMethod && (
                                 <>
                                     <input
                                         type="text"
                                         placeholder="Username"
-                                        className="input px-3 py-2 rounded-lg border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 ring-1"
+                                        className="input px-3.5 py-2.5 rounded-xl border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 text-sm"
+                                        value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Full Name"
-                                        className="input px-3 py-2 rounded-lg border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 ring-1"
+                                        className="input px-3.5 py-2.5 rounded-xl border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 text-sm"
+                                        value={name}
                                         onChange={(e) => setName(e.target.value)}
                                     />
                                 </>
@@ -105,33 +107,35 @@ export default function LoginComponent() {
                             <input
                                 type="email"
                                 placeholder="Email"
-                                className="input px-3 py-2 rounded-lg border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 ring-1"
+                                className="input px-3.5 py-2.5 rounded-xl border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 text-sm"
+                                value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
 
                             <input
                                 type="password"
                                 placeholder="Password"
-                                className="input px-3 py-2 rounded-lg border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 outline-none focus:outline-none focus:ring-0 ring-1"
+                                className="input px-3.5 py-2.5 rounded-xl border border-gray-300 outline-none transition-all duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 text-sm"
+                                value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             {
                                 authState?.isLoading ?
-                                <div className='mt-3 py-3 rounded-lg bg-blue-600 flex flex-col justify-center items-center shadow-md'>
-                                    <BeatLoader size={14}/> 
+                                <div className='mt-3 py-3 rounded-xl bg-blue-600 flex flex-col justify-center items-center shadow-md'>
+                                    <BeatLoader size={12} color="#ffffff" /> 
                                 </div>
                                 :
                                 <button
-                                    className="mt-3 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md"
+                                    type="submit"
+                                    className="mt-3 py-2.5 rounded-xl font-semibold bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.99] transition-all shadow-md cursor-pointer"
                                     onClick={() => {
-                                        userLoginMethod ? handleLogin : handleRegister;
+                                        userLoginMethod ? handleLogin() : handleRegister();
                                     }}
                                 >
                                     {userLoginMethod ? "Login" : "Sign Up"}
                                 </button>
                             }
-                            
-                        </div>
+                        </form>
 
                         <p
                             className="text-sm text-blue-600 cursor-pointer hover:underline mt-4"
