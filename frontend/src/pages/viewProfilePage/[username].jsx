@@ -148,7 +148,7 @@ export default function viewProfilePage({ userProfile }) {
     return (
         <UserLayout>
             <DashBoardLayout>
-                <div className={`${styles.container} flex flex-col gap-6 p-4 sm:p-6 max-w-5xl mx-auto rounded-3xl border border-slate-200/80 shadow-xs bg-white`}>
+                <div className={`${styles.container} w-full flex flex-col gap-6 p-4 sm:p-6 max-w-5xl mx-auto rounded-3xl border border-slate-200/80 shadow-xs bg-white overflow-x-hidden`}>
                     {/* Header Banner & Profile Card */}
                     <div className='relative w-full rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs bg-slate-100'>
                         <img 
@@ -159,8 +159,8 @@ export default function viewProfilePage({ userProfile }) {
                     </div>
 
                     {/* Profile Avatar & Info Row */}
-                    <div className='relative flex flex-col md:flex-row md:items-end justify-between px-2 sm:px-4 -mt-16 sm:-mt-20 gap-4'>
-                        <div className='flex flex-col sm:flex-row items-center sm:items-end gap-4'>
+                    <div className='relative flex flex-col md:flex-row md:items-end justify-between px-2 sm:px-4 -mt-16 sm:-mt-20 gap-4 min-w-0'>
+                        <div className='flex flex-col sm:flex-row items-center sm:items-end gap-4 min-w-0'>
                             <img 
                                 src={`${BASE_URL}/${userProfile.userId.profilePicture}`} 
                                 alt={userProfile.userId.name || "User profile"} 
@@ -190,7 +190,7 @@ export default function viewProfilePage({ userProfile }) {
                         </div>
 
                         {/* Action Buttons Bar */}
-                        <div className='flex flex-wrap items-center justify-center sm:justify-end gap-2.5 mt-2 md:mt-0'>
+                        <div className='flex flex-wrap items-center justify-center sm:justify-end gap-2.5 mt-2 md:mt-0 w-full md:w-auto'>
                             {/* Connection Action Button */}
                             {isConnected ? (
                                 <button className={`px-4 py-2 font-medium text-sm rounded-xl border flex items-center gap-1.5 ${

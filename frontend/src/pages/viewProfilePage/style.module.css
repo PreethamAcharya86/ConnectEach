@@ -1,7 +1,10 @@
 .container {
     background-color: #ffffff;
     min-height: 100%;
+    width: 100%;
+    overflow-x: hidden;
 }
+
 .postDiv {
     background-color: #ffffff;
 }
