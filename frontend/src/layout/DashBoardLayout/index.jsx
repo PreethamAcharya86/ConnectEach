@@ -181,24 +181,27 @@ export default function DashBoardLayout({ children }) {
                     }
                     {children}
                 </div>
-                <div className="extraContainer hidden w-full md:flex bg-gray-100 flex-col h-[calc(100vh-118px)]">
-                    <p className='font-semibold text-center p-1 rounded-lg border bg-white shadow-lg'>
+                <div className="extraContainer hidden w-full md:flex bg-slate-50 flex-col h-[calc(100vh-118px)]">
+                    <p className='text-xs font-semibold uppercase tracking-widest text-slate-400 p-2 pb-1'>
                         Top Profiles
                     </p>
                     <div className={`${styles.modern_scrollbar} flex flex-col p-2 overflow-y-auto space-y-2`}>
                     {authState.all_profile_fetched && authState.all_users.map((profile) => {
                         return (
-                            <div className='flex flex-col p-1 bg-white w-full cursor-pointer border-1 border-transparent hover:ring-3 hover:scale-104 transition-all hover:shadow-[0_4px_12px_rgba(96,165,250,0.3)] delay-50 !mt-2 rounded-xl shadow-lg  gap-2 ring-2 ring-blue-400 bg-white' key={profile._id} onClick={() => { 
+                            <div className='flex flex-col p-2.5 bg-white w-full cursor-pointer border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all delay-50 !mt-2 rounded-xl shadow-sm gap-1.5' key={profile._id} onClick={() => { 
                                 router.push(`/viewProfilePage/${profile.userId.username}`);
                             }}>
-                                <img src={`${BASE_URL}/${profile?.userId?.profilePicture}`} alt="User profile" className='h-8 w-8 rounded-full'/>
-                                <p className='font-semibold'>{profile?.userId?.name}</p>
-                                <p className='font-light italic text-sm'>{profile?.bio}</p>
+                                <div className='flex items-center gap-2.5'>
+                                    <img src={`${BASE_URL}/${profile?.userId?.profilePicture}`} alt="User profile" className='h-9 w-9 rounded-full object-cover ring-2 ring-slate-100'/>
+                                    <p className='font-semibold text-slate-900 text-sm'>{profile?.userId?.name}</p>
+                                </div>
+                                <p className='text-slate-400 text-xs line-clamp-2 pl-[46px]'>{profile?.bio}</p>
                             </div>
                         )
                     })}
                     </div>
                 </div>
+
             </div>
             
         </div>
